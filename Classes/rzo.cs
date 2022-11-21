@@ -20,7 +20,6 @@ namespace Azerty_manager.Classes
         }
         public static void sendMsg(string message, SslStream sslStream)
         {
-
             sslStream.Write(Encoding.UTF8.GetBytes(message), 0, Encoding.UTF8.GetBytes(message).Length);
         }
 
