@@ -13,7 +13,7 @@
 * CWE-532	Insertion of Sensitive Information into Log File
 * CWE-798	Use of Hard-coded Credentials 
 
-## Use Sockets and stay focused on vulnerable code
+## Create just one socket and stay focused on vulnerable code
 
 ```c#
 
@@ -34,7 +34,7 @@
         SslStream sslStream = new SslStream(stream, false, new RemoteCertificateValidationCallback(rzo.CertificateValidationCallback));
         sslStream.AuthenticateAsClient("client", null, System.Security.Authentication.SslProtocols.Tls12, false);
         message += rzo.readMsg(sslStream, client) + Environment.NewLine;
-        rzo.sendMsg(xml, sslStream);
+        rzo.sendMsg("Hello World", sslStream);
         message += rzo.readMsg(sslStream, client) + Environment.NewLine;
 
 ```
