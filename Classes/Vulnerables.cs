@@ -8,17 +8,21 @@ using System.Xml;
 using System.Linq;
 using System.Data;
 using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Azerty_manager.Classes
 {
     public class Vulnerables
     {
+        private static string secret { get; } = string.Concat(Enumerable.Repeat(Misc.RandomString(1),20));
 
         public static object VulnerableDeserialize(string json)
         {
             return JsonConvert.DeserializeObject<object>(json, new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.All //unsafe
+                TypeNameHandling = TypeNameHandling.All 
             });
         }
 
@@ -26,8 +30,8 @@ namespace Azerty_manager.Classes
         {
 
             XmlReaderSettings settings = new XmlReaderSettings();
-            settings.DtdProcessing = DtdProcessing.Parse; //unsafe
-            settings.XmlResolver = new XmlUrlResolver(); //unsafe
+            settings.DtdProcessing = DtdProcessing.Parse; 
+            settings.XmlResolver = new XmlUrlResolver(); 
             settings.MaxCharactersFromEntities = 6000;
 
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
@@ -60,7 +64,6 @@ namespace Azerty_manager.Classes
             }
 
             page = File.ReadAllText(logFile).Replace("</body>", "<p>" + str + "<p><br>" + Environment.NewLine + "</body>");
-            Console.WriteLine(page);
             File.WriteAllText(logFile, page);
 
         }
@@ -83,6 +86,48 @@ namespace Azerty_manager.Classes
             return result.Length > 0 ? true : false;   
 
         }
+
+
+        public static string VulnerableGenerateToken(string user)
+        {
+            Console.WriteLine("JWT token generation...");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", user) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public static bool VulnerableValidateToken(string token)
+        {
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secret);
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                Console.WriteLine("Welcome {0}, your JWT token: {1} is valid!", jwtToken.Claims.First(x => x.Type == "id").Value, token);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
 
     }
 }

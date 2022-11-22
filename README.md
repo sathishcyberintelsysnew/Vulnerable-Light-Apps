@@ -12,6 +12,8 @@
 * CWE-521	Weak Password Requirements
 * CWE-532	Insertion of Sensitive Information into Log File
 * CWE-798	Use of Hard-coded Credentials 
+* CWE-1270  Generation of Incorrect Security Tokens
+* CWE-284: Improper Access Control
 
 ## Create just one socket and stay focused on vulnerable code ;)
 

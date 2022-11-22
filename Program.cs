@@ -23,16 +23,24 @@ namespace azerty
             string user = string.Empty;
             string passwd = string.Empty;
 
+            if (!File.Exists(f))
+            {
+                File.WriteAllText(f, new Guid().ToString());
+            }
+            File.SetAttributes(f, FileAttributes.ReadOnly);
 
-            while(!(Vulnerables.VulnerableQuery(user, passwd)))
+
+            while (!(Vulnerables.VulnerableQuery(user, passwd)))
             {
                 Console.Write("user:");
                 user = Console.ReadLine();
                 Console.Write("password:");
                 passwd = Console.ReadLine();
             }
+            string token = Vulnerables.VulnerableGenerateToken(user);
+            Vulnerables.VulnerableValidateToken(token);
 
-            
+           
             var certificate = new X509Certificate2("azerty-manager.pfx", "azertymanager");
             Console.WriteLine("Challanger starting on port: {0}", port);
             var listener = new TcpListener(IPAddress.Loopback, port);
@@ -55,21 +63,15 @@ namespace azerty
 
                         Vulnerables.VulnerableLogs(input);
 
-                        if (!File.Exists(f))
+                        if (Vulnerables.VulnerableValidateToken(input))
                         {
-                            File.WriteAllText(f, new Guid().ToString());
+                            message = input + "is a valid token";
                         }
-                        File.SetAttributes(f, FileAttributes.ReadOnly);
 
                         try
                         {
                             Vulnerables.VulnerableDeserialize(input);
                             message = f + " is " + File.GetAttributes(f).ToString();
-
-                            if (!((File.GetAttributes(f) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly))
-                            {
-                                message = "Congrats ! deserialization flag is :" + File.ReadAllText("flag.txt");
-                            }
                         }
                         catch(Exception ex)
                         {
@@ -89,9 +91,9 @@ namespace azerty
                         rzo.sendMsg(message, sslStream);
 
                     }
-                }catch(Exception e)
+                }catch(Exception ex)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(ex);
                 }
 
             }
