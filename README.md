@@ -15,5 +15,8 @@ Vulnerable Console Apps for educational purposes
 * CWE-798	Use of Hard-coded Credentials
 * CWE-284   Improper Access Control
 * CWE-1270  Generation of Incorrect Security Tokens
-* CWE-918 Server-Side Request Forgery (SSRF)
-
+* CWE-918   Server-Side Request Forgery (SSRF)
+* CWE-319   Cleartext Transmission of Sensitive Information
+* CWE-693   Protection Mechanism Failure
+* CWE-525   Use of Web Browser Cache Containing Sensitive Information
+* CWE-200   Exposure of Sensitive Information to an Unauthorized Actor
