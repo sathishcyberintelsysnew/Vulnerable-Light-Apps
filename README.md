@@ -1,6 +1,6 @@
-# Azerty-manager
+# Vulnerable Web Apps
  
-Vulnerable Console Apps for educational purposes
+Vulnerable API for educational purposes
 
 
 * CWE-89	Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')
