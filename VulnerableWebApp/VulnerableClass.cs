@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.DataProtection;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System;
 using Microsoft.Net.Http.Headers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System;
+using System.Threading;
 
 namespace VulnerableWebApplication
 {
@@ -21,7 +24,7 @@ namespace VulnerableWebApplication
         public static object VulnerableDeserialize(string json)
         {
             string f = "ReadOnly.txt";
-            json.Replace("Framework", "").Replace("Token", "").Replace("cmd", "").Replace("powershell", "");
+            json = Misc.ScriptKiddiesFilter(json);
 
             if (!File.Exists(f))
             {
@@ -36,6 +39,8 @@ namespace VulnerableWebApplication
 
         public static string VulnerableXmlParser(string xml)
         {
+
+            xml = Misc.ScriptKiddiesFilter(xml);
 
             XmlReaderSettings settings = new XmlReaderSettings();
             settings.DtdProcessing = DtdProcessing.Parse;
@@ -163,6 +168,33 @@ namespace VulnerableWebApplication
 
 
             }
+
+        }
+
+        public static async Task<string> VulnerableWebRequest(string uri="https://localhost:3000/")
+        {
+            string rep = "Result: ";
+
+            if (uri.Contains("https://localhost"))
+            {
+                using HttpClient client = new();
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+                client.DefaultRequestHeaders.Add("User-Agent", "VulnerableApp");
+
+                await exec(client, uri);
+
+                
+                static async Task exec(HttpClient client, string uri)
+                {
+                    var r = client.GetAsync(uri);
+                    r.Result.EnsureSuccessStatusCode();
+                    Console.WriteLine(await r.Result.Content.ReadAsStringAsync());
+
+                }
+
+            }
+            return rep;
         }
     }
 }

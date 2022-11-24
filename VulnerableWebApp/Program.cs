@@ -19,5 +19,7 @@ app.MapGet("/Auth", async (string u, string p) => await Task.FromResult(Vulnerab
 
 app.MapGet("/Jwt", async (string i) => await Task.FromResult(VulnerableClass.VulnerableValidateToken(i)));
 
+app.MapGet("/Req", async (string i) => await Task.FromResult(VulnerableClass.VulnerableWebRequest(i)));
+
 app.Run("https://localhost:3000");
 
