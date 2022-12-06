@@ -20,3 +20,17 @@ Vulnerable API for educational purposes
 * CWE-693   Protection Mechanism Failure
 * CWE-525   Use of Web Browser Cache Containing Sensitive Information
 * CWE-200   Exposure of Sensitive Information to an Unauthorized Actor
+
+## install dotnet 7.0
+
+https://dotnet.microsoft.com/en-us/download
+
+## certificate
+
+To trust the certificate (Windows and macOS only) run 
+
+```PowerShell
+dotnet dev-certs https --trust
+```
+
+For more information on configuring HTTPS see https://go.microsoft.com/fwlink/?linkid=848054.
