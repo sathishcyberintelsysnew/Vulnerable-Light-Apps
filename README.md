@@ -11,6 +11,7 @@ Vulnerable API for educational purposes
 * CWE-326	Inadequate Encryption Strength
 * CWE-287	Improper Authentication
 * CWE-521	Weak Password Requirements
+* CWE 639   Insecure Direct Object Reference
 * CWE-532	Insertion of Sensitive Information into Log File
 * CWE-798	Use of Hard-coded Credentials
 * CWE-284   Improper Access Control

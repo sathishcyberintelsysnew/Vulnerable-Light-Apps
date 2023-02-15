@@ -21,5 +21,9 @@ app.MapGet("/Jwt", async (string i) => await Task.FromResult(VulnerableClass.Vul
 
 app.MapGet("/Req", async (string i) => await Task.FromResult(VulnerableClass.VulnerableWebRequest(i)));
 
+app.MapGet("/Addr", async (int i,string t) => await Task.FromResult(VulnerableClass.VulnerableObjectReference(i,t)));
+
+
+
 app.Run("https://localhost:3000");
 

@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System;
 using System.Threading;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace VulnerableWebApplication
 {
@@ -34,7 +35,7 @@ namespace VulnerableWebApplication
 
             JsonConvert.DeserializeObject<object>(json, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
 
-            return f + " is " + File.GetAttributes(f).ToString();
+            return "{\""+f+"\":\""+File.GetAttributes(f).ToString()+"\"}";
         }
 
         public static string VulnerableXmlParser(string xml)
@@ -80,7 +81,7 @@ namespace VulnerableWebApplication
             Console.WriteLine(page);
             File.WriteAllText(logFile, page);
 
-            return "ok";
+            return "{\"success\":true}";
 
         }
 
@@ -99,7 +100,7 @@ namespace VulnerableWebApplication
             System.Diagnostics.Trace.WriteLine("login attempt for:\n" + user + "\n" + passwd + "\n");
             var result = DataSet.Tables[0].Select("user = '" + user + "' and passwd = '" + passwd + "'");
 
-            return result.Length > 0 ? VulnerableGenerateToken(user) : false.ToString();
+            return result.Length > 0 ? VulnerableGenerateToken(user) : "{\"success\":false}";
 
         }
 
@@ -117,7 +118,7 @@ namespace VulnerableWebApplication
             return tokenHandler.WriteToken(token);
         }
 
-        public static bool VulnerableValidateToken(string token)
+        public static string VulnerableValidateToken(string token)
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -152,11 +153,11 @@ namespace VulnerableWebApplication
 
                     var jwtToken = (JwtSecurityToken)validatedToken;
                     Console.WriteLine("Welcome {0}, your JWT token: {1} is valid!", jwtToken.Claims.First(x => x.Type == "id").Value, token);
-                    return true;
+                    return "{\"success\":true}";
                 }
                 else
                 {
-                    return true;
+                    return "{\"success\":false}";
 
                 }
 
@@ -164,7 +165,7 @@ namespace VulnerableWebApplication
             catch(Exception ex)
             {
                 Console.WriteLine(ex.ToString());   
-                return false;
+                return "{\"success\":true}";
 
 
             }
@@ -173,7 +174,7 @@ namespace VulnerableWebApplication
 
         public static async Task<string> VulnerableWebRequest(string uri="https://localhost:3000/")
         {
-            string rep = "Result: ";
+            string rep = "{\"Result\":";
 
             if (uri.Contains("https://localhost"))
             {
@@ -192,9 +193,47 @@ namespace VulnerableWebApplication
                     Console.WriteLine(await r.Result.Content.ReadAsStringAsync());
 
                 }
-
             }
-            return rep;
+            return rep + "}";
+        }
+
+
+        public static string VulnerableObjectReference(int id, string token)
+        {
+
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(secret);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                }, out SecurityToken validatedToken);
+            }
+            catch
+            {
+                return "{\"" + id + "\":\"Forbidden\"}";
+            }
+
+
+
+            DataTable table = new DataTable();
+            table.Columns.Add("id", typeof(int));
+            table.Columns.Add("adresse", typeof(string));
+            table.Rows.Add(42, "3 rue Victor Hugo");
+            table.Rows.Add(99, "4 place Napoléon");
+            var DataSet = new DataSet();
+            DataSet.Tables.Add(table);
+
+            var result = from t in table.AsEnumerable() 
+                                         where t.Field<int>("id").Equals(id) 
+                                         select t.Field<string>("adresse") ;
+
+            return "{\"" + id + "\":\"" + result.FirstOrDefault() + "\"}";
+
         }
     }
 }
