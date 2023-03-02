@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 
-app.MapGet("/", () => "Welcome to VulnerableApp");
+app.MapGet("/", async (string? lang) => await Task.FromResult(VulnerableClass.VulnerableHelloWorld(HttpUtility.UrlDecode(lang)))); ;
 
 app.MapGet("/Log", async (string i) => await Task.FromResult(VulnerableClass.VulnerableLogs(HttpUtility.UrlDecode(i))));
 

@@ -8,7 +8,7 @@
                 .Replace("Token", "")
                 .Replace("cmd", "")
                 .Replace("powershell", "")
-                .Replace("http","");
+                .Replace("http", "");
 
         }
     }

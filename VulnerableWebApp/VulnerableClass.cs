@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System;
 using System.Threading;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace VulnerableWebApplication
 {
@@ -21,6 +22,24 @@ namespace VulnerableWebApplication
     {
         const string chars = "ABCDEFGHIFKLMNOPQRSTUVWXYZ";
         private static string secret { get; } = new string(Enumerable.Repeat(chars, 20).Select(s => s[new Random().Next(s.Length)]).ToArray());
+
+
+        public static object VulnerableHelloWorld(string filename="fr")
+        {
+            if (filename.IsNullOrEmpty())
+            {
+                filename = "fr";
+            }
+
+            while (filename.Contains(".."))
+            {
+                filename.Replace("..", "");
+            }
+
+            string content = File.ReadAllText(filename);
+            return "{\"success\":" + content + "}";
+        }
+
 
         public static object VulnerableDeserialize(string json)
         {
