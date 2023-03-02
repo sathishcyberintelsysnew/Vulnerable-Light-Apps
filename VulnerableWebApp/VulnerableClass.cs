@@ -117,6 +117,7 @@ namespace VulnerableWebApplication
             DataSet.Tables.Add(table);
 
             System.Diagnostics.Trace.WriteLine("login attempt for:\n" + user + "\n" + passwd + "\n");
+            // SQL -> WHERE
             var result = DataSet.Tables[0].Select("user = '" + user + "' and passwd = '" + passwd + "'");
 
             return result.Length > 0 ? VulnerableGenerateToken(user) : "{\"success\":false}";
@@ -176,7 +177,7 @@ namespace VulnerableWebApplication
                 }
                 else
                 {
-                    return "{\"success\":false}";
+                    return "{\"success\":true}";
 
                 }
 
@@ -184,7 +185,7 @@ namespace VulnerableWebApplication
             catch(Exception ex)
             {
                 Console.WriteLine(ex.ToString());   
-                return "{\"success\":true}";
+                return "{\"success\":false}";
 
 
             }
